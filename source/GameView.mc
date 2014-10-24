@@ -2,27 +2,114 @@ using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.System as Sys;
 
-class GameDelegate extends Ui.InputDelegate {
+const numRowsColumns = 4;
+var tiles = new [numRowsColumns * numRowsColumns];
 
+function addTile() {
+    var tilePos;
+
+    var filled = true;
+    while (filled) {
+        tilePos = Math.rand() % 16;
+        filled = (tiles[tilePos] != null);
+    }
+
+    tiles[tilePos] = ((Math.rand() % 4) == 0) ? 4 : 2;
+}
+
+class GameDelegate extends Ui.InputDelegate {
+    function onSwipe(evt) {
+        var dir = evt.getDirection();
+
+        if (dir == Ui.SWIPE_UP) {
+            Sys.println("up");
+            // TODO
+
+            for (var col = 0; col < numRowsColumns; ++col) {
+                for (var row = 0; row < numRowsColumns; ++row) {
+                    var curIdx = numRowsColumns * row + col;
+                    if (tiles[curIdx] == null) {
+                        for (var subRow = row + 1; subRow < numRowsColumns; ++subRow) {
+                            var subIdx = numRowsColumns * subRow + col;
+                            if (tiles[subIdx] != null) {
+                                tiles[curIdx] = tiles[subIdx];
+                                tiles[subIdx] = null;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (dir == Ui.SWIPE_RIGHT) {
+            Sys.println("right");
+            // TODO
+
+            for (var row = 0; row < numRowsColumns; ++row) {
+                for (var col = numRowsColumns - 1; col >= 0; --col) {
+                    var curIdx = numRowsColumns * row + col;
+                    if (tiles[curIdx] == null) {
+                        for (var subCol = col - 1; subCol >= 0; --subCol) {
+                            var subIdx = numRowsColumns * row + subCol;
+                            if (tiles[subIdx] != null) {
+                                tiles[curIdx] = tiles[subIdx];
+                                tiles[subIdx] = null;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (dir == Ui.SWIPE_DOWN) {
+            Sys.println("down");
+            // TODO
+
+            for (var col = 0; col < numRowsColumns; ++col) {
+                for (var row = numRowsColumns - 1; row >= 0; --row) {
+                    var curIdx = numRowsColumns * row + col;
+                    if (tiles[curIdx] == null) {
+                        for (var subRow = row; subRow >= 0; --subRow) {
+                            var subIdx = numRowsColumns * subRow + col;
+                            if (tiles[subIdx] != null) {
+                                tiles[curIdx] = tiles[subIdx];
+                                tiles[subIdx] = null;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (dir == Ui.SWIPE_LEFT) {
+            Sys.println("left");
+            // TODO
+
+            for (var row = 0; row < numRowsColumns; ++row) {
+                for (var col = 0; col < numRowsColumns; ++col) {
+                    var curIdx = numRowsColumns * row + col;
+                    if (tiles[curIdx] == null) {
+                        for (var subCol = col + 1; subCol < numRowsColumns; ++subCol) {
+                            var subIdx = numRowsColumns * row + subCol;
+                            if (tiles[subIdx] != null) {
+                                tiles[curIdx] = tiles[subIdx];
+                                tiles[subIdx] = null;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        addTile();
+
+        Ui.requestUpdate();
+    }
 }
 
 class GameView extends Ui.View {
-    const numRowsColumns = 4;
-
-    var tiles = new [16];
-
     function onLayout(dc) {
-        for (var i = 0; i < 2; ++i) {
-            var tilePos;
-
-            var filled = true;
-            while (filled) {
-                tilePos = Math.rand() % 16;
-                filled = (tiles[tilePos] != null);
-            }
-
-            tiles[tilePos] = ((Math.rand() % 4) == 0) ? 4 : 2;
-        }
+        // Add the first two tiles
+        addTile();
+        addTile();
     }
 
     //! Update the view
