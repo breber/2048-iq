@@ -18,85 +18,185 @@ function addTile() {
 }
 
 class GameDelegate extends Ui.InputDelegate {
+    function slideUp(combine) {
+        for (var col = 0; col < numRowsColumns; ++col) {
+            for (var row = 0; row < numRowsColumns; ++row) {
+                var curIdx = numRowsColumns * row + col;
+                if (tiles[curIdx] == null) {
+                    for (var subRow = row + 1; subRow < numRowsColumns; ++subRow) {
+                        var subIdx = numRowsColumns * subRow + col;
+                        if (tiles[subIdx] != null) {
+                            tiles[curIdx] = tiles[subIdx];
+                            tiles[subIdx] = null;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (combine) {
+                Sys.println("Combining:");
+
+                for (var row = 0; row < numRowsColumns - 1; ++row) {
+                    var curIdx = numRowsColumns * row + col;
+                    var nextIdx = numRowsColumns * (row + 1) + col;
+                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+
+                    if ((tiles[curIdx] != null) &&
+                        (tiles[curIdx] == tiles[nextIdx]))
+                    {
+                        tiles[curIdx] <<= 1;
+                        tiles[nextIdx] = null;
+                        row += 2;
+                    }
+                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+                }
+            }
+        }
+
+        if (combine) {
+            slideUp(false);
+        }
+    }
+
+    function slideDown(combine) {
+        for (var col = 0; col < numRowsColumns; ++col) {
+            for (var row = numRowsColumns - 1; row >= 0; --row) {
+                var curIdx = numRowsColumns * row + col;
+                if (tiles[curIdx] == null) {
+                    for (var subRow = row; subRow >= 0; --subRow) {
+                        var subIdx = numRowsColumns * subRow + col;
+                        if (tiles[subIdx] != null) {
+                            tiles[curIdx] = tiles[subIdx];
+                            tiles[subIdx] = null;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (combine) {
+                Sys.println("Combining:");
+
+                for (var row = numRowsColumns - 1; row > 0; --row) {
+                    var curIdx = numRowsColumns * row + col;
+                    var nextIdx = numRowsColumns * (row - 1) + col;
+                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+
+                    if ((tiles[curIdx] != null) &&
+                        (tiles[curIdx] == tiles[nextIdx]))
+                    {
+                        tiles[curIdx] <<= 1;
+                        tiles[nextIdx] = null;
+                        row -= 2;
+                    }
+                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+                }
+            }
+        }
+
+        if (combine) {
+            slideDown(false);
+        }
+    }
+
+    function slideLeft(combine) {
+        for (var row = 0; row < numRowsColumns; ++row) {
+            for (var col = 0; col < numRowsColumns; ++col) {
+                var curIdx = numRowsColumns * row + col;
+                if (tiles[curIdx] == null) {
+                    for (var subCol = col + 1; subCol < numRowsColumns; ++subCol) {
+                        var subIdx = numRowsColumns * row + subCol;
+                        if (tiles[subIdx] != null) {
+                            tiles[curIdx] = tiles[subIdx];
+                            tiles[subIdx] = null;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (combine) {
+                Sys.println("Combining:");
+
+                for (var col = 0; col < numRowsColumns - 1; ++col) {
+                    var curIdx = numRowsColumns * row + col;
+                    var nextIdx = numRowsColumns * row + col + 1;
+                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+
+                    if ((tiles[curIdx] != null) &&
+                        (tiles[curIdx] == tiles[nextIdx]))
+                    {
+                        tiles[curIdx] <<= 1;
+                        tiles[nextIdx] = null;
+                        col += 2;
+                    }
+                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+                }
+            }
+        }
+
+        if (combine) {
+            slideLeft(false);
+        }
+    }
+
+    function slideRight(combine) {
+        for (var row = 0; row < numRowsColumns; ++row) {
+            for (var col = numRowsColumns - 1; col >= 0; --col) {
+                var curIdx = numRowsColumns * row + col;
+                if (tiles[curIdx] == null) {
+                    for (var subCol = col - 1; subCol >= 0; --subCol) {
+                        var subIdx = numRowsColumns * row + subCol;
+                        if (tiles[subIdx] != null) {
+                            tiles[curIdx] = tiles[subIdx];
+                            tiles[subIdx] = null;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (combine) {
+                Sys.println("Combining:");
+
+                for (var col = numRowsColumns - 1; col > 0; --col) {
+                    var curIdx = numRowsColumns * row + col;
+                    var nextIdx = numRowsColumns * row + col - 1;
+                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+
+                    if ((tiles[curIdx] != null) &&
+                        (tiles[curIdx] == tiles[nextIdx]))
+                    {
+                        tiles[curIdx] <<= 1;
+                        tiles[nextIdx] = null;
+                        col -= 2;
+                    }
+                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+                }
+            }
+        }
+
+        if (combine) {
+            slideRight(false);
+        }
+    }
+
     function onSwipe(evt) {
         var dir = evt.getDirection();
 
         if (dir == Ui.SWIPE_UP) {
             Sys.println("up");
-            // TODO
-
-            for (var col = 0; col < numRowsColumns; ++col) {
-                for (var row = 0; row < numRowsColumns; ++row) {
-                    var curIdx = numRowsColumns * row + col;
-                    if (tiles[curIdx] == null) {
-                        for (var subRow = row + 1; subRow < numRowsColumns; ++subRow) {
-                            var subIdx = numRowsColumns * subRow + col;
-                            if (tiles[subIdx] != null) {
-                                tiles[curIdx] = tiles[subIdx];
-                                tiles[subIdx] = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            slideUp(true);
         } else if (dir == Ui.SWIPE_RIGHT) {
             Sys.println("right");
-            // TODO
-
-            for (var row = 0; row < numRowsColumns; ++row) {
-                for (var col = numRowsColumns - 1; col >= 0; --col) {
-                    var curIdx = numRowsColumns * row + col;
-                    if (tiles[curIdx] == null) {
-                        for (var subCol = col - 1; subCol >= 0; --subCol) {
-                            var subIdx = numRowsColumns * row + subCol;
-                            if (tiles[subIdx] != null) {
-                                tiles[curIdx] = tiles[subIdx];
-                                tiles[subIdx] = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            slideRight(true);
         } else if (dir == Ui.SWIPE_DOWN) {
             Sys.println("down");
-            // TODO
-
-            for (var col = 0; col < numRowsColumns; ++col) {
-                for (var row = numRowsColumns - 1; row >= 0; --row) {
-                    var curIdx = numRowsColumns * row + col;
-                    if (tiles[curIdx] == null) {
-                        for (var subRow = row; subRow >= 0; --subRow) {
-                            var subIdx = numRowsColumns * subRow + col;
-                            if (tiles[subIdx] != null) {
-                                tiles[curIdx] = tiles[subIdx];
-                                tiles[subIdx] = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            slideDown(true);
         } else if (dir == Ui.SWIPE_LEFT) {
             Sys.println("left");
-            // TODO
-
-            for (var row = 0; row < numRowsColumns; ++row) {
-                for (var col = 0; col < numRowsColumns; ++col) {
-                    var curIdx = numRowsColumns * row + col;
-                    if (tiles[curIdx] == null) {
-                        for (var subCol = col + 1; subCol < numRowsColumns; ++subCol) {
-                            var subIdx = numRowsColumns * row + subCol;
-                            if (tiles[subIdx] != null) {
-                                tiles[curIdx] = tiles[subIdx];
-                                tiles[subIdx] = null;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            slideLeft(true);
         }
 
         addTile();
@@ -107,6 +207,7 @@ class GameDelegate extends Ui.InputDelegate {
 
 class GameView extends Ui.View {
     function onLayout(dc) {
+        Math.srand(35);
         // Add the first two tiles
         addTile();
         addTile();
