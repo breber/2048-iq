@@ -4,59 +4,110 @@ using Toybox.System as Sys;
 
 const numRowsColumns = 4;
 var tiles = new [numRowsColumns * numRowsColumns];
+var gameOver = false;
 
 function addTile() {
     var tilePos;
 
+    // Check to make sure we haven't filled the screen
     var filled = true;
-    while (filled) {
-        tilePos = Math.rand() % 16;
-        filled = (tiles[tilePos] != null);
+    for (var i = 0; i < tiles.size(); ++i) {
+        filled = filled && (tiles[i] != null);
     }
 
-    tiles[tilePos] = ((Math.rand() % 4) == 0) ? 4 : 2;
+    if (filled) {
+        gameOver = true;
+    } else {
+        filled = true;
+        while (filled) {
+            tilePos = Math.rand() % 16;
+            filled = (tiles[tilePos] != null);
+        }
+
+        tiles[tilePos] = ((Math.rand() % 4) == 0) ? 4 : 2;
+    }
 }
 
 class GameDelegate extends Ui.InputDelegate {
-    function slideUp(combine) {
-        for (var col = 0; col < numRowsColumns; ++col) {
-            for (var row = 0; row < numRowsColumns; ++row) {
+    function printGrid() {
+        for (var row = 0; row < numRowsColumns; ++row) {
+            for (var col = 0; col < numRowsColumns; ++col) {
                 var curIdx = numRowsColumns * row + col;
-                if (tiles[curIdx] == null) {
-                    for (var subRow = row + 1; subRow < numRowsColumns; ++subRow) {
-                        var subIdx = numRowsColumns * subRow + col;
-                        if (tiles[subIdx] != null) {
-                            tiles[curIdx] = tiles[subIdx];
-                            tiles[subIdx] = null;
-                            break;
-                        }
-                    }
-                }
+                var value = (tiles[curIdx] == null) ? 0 : tiles[curIdx];
+                Sys.print(value.format("%4d"));
             }
+            Sys.println("");
+        }
+        Sys.println("");
+    }
 
-            if (combine) {
-                Sys.println("Combining:");
+    function rotateClockwise() {
+        var tempArr = new [numRowsColumns * numRowsColumns];
 
-                for (var row = 0; row < numRowsColumns - 1; ++row) {
-                    var curIdx = numRowsColumns * row + col;
-                    var nextIdx = numRowsColumns * (row + 1) + col;
-                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
+        // Copy all values to the temporary array and
+        // reset the tiles array
+        for (var i = 0; i < tempArr.size(); ++i) {
+            tempArr[i] = tiles[i];
+            tiles[i] = null;
+        }
 
-                    if ((tiles[curIdx] != null) &&
-                        (tiles[curIdx] == tiles[nextIdx]))
-                    {
-                        tiles[curIdx] <<= 1;
-                        tiles[nextIdx] = null;
-                        row += 2;
-                    }
-                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
-                }
+        // Mirror across row
+        for (var row = 0; row < numRowsColumns; ++row) {
+            for (var col = 0; col < numRowsColumns; ++col) {
+                var curIdx = numRowsColumns * row + col;
+                var newIdx = numRowsColumns * row + (numRowsColumns - col - 1);
+
+                tiles[newIdx] = tempArr[curIdx];
+                tempArr[curIdx] = null;
             }
         }
 
-        if (combine) {
-            slideUp(false);
+        // Copy all values to the temporary array and
+        // reset the tiles array
+        for (var i = 0; i < tempArr.size(); ++i) {
+            tempArr[i] = tiles[i];
+            tiles[i] = null;
         }
+
+        // Mirror across diagonal
+        for (var row = 0; row < numRowsColumns; ++row) {
+            for (var col = 0; col < numRowsColumns; ++col) {
+                var curIdx = numRowsColumns * row + col;
+                var newIdx = tiles.size() - 1 - row - (numRowsColumns * col);
+
+                tiles[newIdx] = tempArr[curIdx];
+            }
+        }
+    }
+
+    function slideUp(combine) {
+        rotateClockwise();
+        rotateClockwise();
+
+        slideDown(combine);
+
+        rotateClockwise();
+        rotateClockwise();
+    }
+
+    function slideLeft(combine) {
+        rotateClockwise();
+        rotateClockwise();
+        rotateClockwise();
+
+        slideDown(combine);
+
+        rotateClockwise();
+    }
+
+    function slideRight(combine) {
+        rotateClockwise();
+
+        slideDown(combine);
+
+        rotateClockwise();
+        rotateClockwise();
+        rotateClockwise();
     }
 
     function slideDown(combine) {
@@ -76,12 +127,9 @@ class GameDelegate extends Ui.InputDelegate {
             }
 
             if (combine) {
-                Sys.println("Combining:");
-
                 for (var row = numRowsColumns - 1; row > 0; --row) {
                     var curIdx = numRowsColumns * row + col;
                     var nextIdx = numRowsColumns * (row - 1) + col;
-                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
 
                     if ((tiles[curIdx] != null) &&
                         (tiles[curIdx] == tiles[nextIdx]))
@@ -90,7 +138,6 @@ class GameDelegate extends Ui.InputDelegate {
                         tiles[nextIdx] = null;
                         row -= 2;
                     }
-                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
                 }
             }
         }
@@ -100,102 +147,16 @@ class GameDelegate extends Ui.InputDelegate {
         }
     }
 
-    function slideLeft(combine) {
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < numRowsColumns; ++col) {
-                var curIdx = numRowsColumns * row + col;
-                if (tiles[curIdx] == null) {
-                    for (var subCol = col + 1; subCol < numRowsColumns; ++subCol) {
-                        var subIdx = numRowsColumns * row + subCol;
-                        if (tiles[subIdx] != null) {
-                            tiles[curIdx] = tiles[subIdx];
-                            tiles[subIdx] = null;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (combine) {
-                Sys.println("Combining:");
-
-                for (var col = 0; col < numRowsColumns - 1; ++col) {
-                    var curIdx = numRowsColumns * row + col;
-                    var nextIdx = numRowsColumns * row + col + 1;
-                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
-
-                    if ((tiles[curIdx] != null) &&
-                        (tiles[curIdx] == tiles[nextIdx]))
-                    {
-                        tiles[curIdx] <<= 1;
-                        tiles[nextIdx] = null;
-                        col += 2;
-                    }
-                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
-                }
-            }
-        }
-
-        if (combine) {
-            slideLeft(false);
-        }
-    }
-
-    function slideRight(combine) {
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = numRowsColumns - 1; col >= 0; --col) {
-                var curIdx = numRowsColumns * row + col;
-                if (tiles[curIdx] == null) {
-                    for (var subCol = col - 1; subCol >= 0; --subCol) {
-                        var subIdx = numRowsColumns * row + subCol;
-                        if (tiles[subIdx] != null) {
-                            tiles[curIdx] = tiles[subIdx];
-                            tiles[subIdx] = null;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (combine) {
-                Sys.println("Combining:");
-
-                for (var col = numRowsColumns - 1; col > 0; --col) {
-                    var curIdx = numRowsColumns * row + col;
-                    var nextIdx = numRowsColumns * row + col - 1;
-                    Sys.println("    tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
-
-                    if ((tiles[curIdx] != null) &&
-                        (tiles[curIdx] == tiles[nextIdx]))
-                    {
-                        tiles[curIdx] <<= 1;
-                        tiles[nextIdx] = null;
-                        col -= 2;
-                    }
-                    Sys.println("        tiles[" + curIdx + "]: " + tiles[curIdx] + " == tiles[" + nextIdx + "]: " + tiles[nextIdx]);
-                }
-            }
-        }
-
-        if (combine) {
-            slideRight(false);
-        }
-    }
-
     function onSwipe(evt) {
         var dir = evt.getDirection();
 
         if (dir == Ui.SWIPE_UP) {
-            Sys.println("up");
             slideUp(true);
         } else if (dir == Ui.SWIPE_RIGHT) {
-            Sys.println("right");
             slideRight(true);
         } else if (dir == Ui.SWIPE_DOWN) {
-            Sys.println("down");
             slideDown(true);
         } else if (dir == Ui.SWIPE_LEFT) {
-            Sys.println("left");
             slideLeft(true);
         }
 
@@ -234,9 +195,6 @@ class GameView extends Ui.View {
             dc.drawLine(x, 0, x, height);
         }
 
-
-        Sys.println(tiles);
-
         // Draw the tiles
         for (var i = 0; i < tiles.size(); ++i) {
             var row = i / numRowsColumns;
@@ -252,6 +210,12 @@ class GameView extends Ui.View {
             dc.setColor(Gfx.COLOR_WHITE, bgColor);
             dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
                 Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+        }
+
+        if (gameOver) {
+            dc.setColor(Gfx.COLOR_TRANSPARENT, Gfx.COLOR_WHITE);
+            dc.drawText(width / 2, height / 2,
+                Gfx.FONT_LARGE, "GAME OVER!", Gfx.TEXT_JUSTIFY_CENTER);
         }
     }
 
@@ -274,11 +238,11 @@ class GameView extends Ui.View {
             } else if (tile == 256) {
                 return Gfx.COLOR_DK_YELLOW;
             } else if (tile == 512) {
-                // TODO
+                return Gfx.COLOR_GREEN;
             } else if (tile == 1024) {
-                // TODO
+                return Gfx.COLOR_DK_GREEN;
             } else if (tile == 2048) {
-                // TODO
+                return Gfx.COLOR_BLUE;
             }
         }
 
