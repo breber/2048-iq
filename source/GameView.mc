@@ -148,6 +148,16 @@ class GameDelegate extends Ui.InputDelegate {
         }
     }
 
+    function onTap(evt) {
+        // Temporarily use tap for up swipe
+        onSwipe(new Ui.SwipeEvent(Ui.SWIPE_UP));
+    }
+
+    function onHold(evt) {
+        // Temporarily use hold for down swipe
+        onSwipe(new Ui.SwipeEvent(Ui.SWIPE_DOWN));
+    }
+
     function onSwipe(evt) {
         var dir = evt.getDirection();
 
