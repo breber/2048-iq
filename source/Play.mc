@@ -18,5 +18,8 @@ class PlayView extends Ui.View {
 
         dc.drawText(width / 2, height / 2,
             Gfx.FONT_MEDIUM, "Click to Play!", Gfx.TEXT_JUSTIFY_CENTER);
+
+        dc.drawText(width / 2, height / 2 + 30,
+            Gfx.FONT_SMALL, "High Score: " + Score.getHighScore(), Gfx.TEXT_JUSTIFY_CENTER);
     }
 }

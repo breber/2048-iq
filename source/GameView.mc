@@ -135,6 +135,7 @@ class GameDelegate extends Ui.InputDelegate {
                         (tiles[curIdx] == tiles[nextIdx]))
                     {
                         tiles[curIdx] <<= 1;
+                        Score.addToCurrentScore(tiles[curIdx]);
                         tiles[nextIdx] = null;
                         row -= 2;
                     }
@@ -174,7 +175,6 @@ class GameDelegate extends Ui.InputDelegate {
 
         // If the board differs, add a tile and update score
         if (madeMove) {
-            // TODO: keep score
             addTile();
         }
 
@@ -185,6 +185,8 @@ class GameDelegate extends Ui.InputDelegate {
 class GameView extends Ui.View {
     function onLayout(dc) {
         Math.srand(35);
+        Score.resetCurrentScore();
+
         // Add the first two tiles
         addTile();
         addTile();
