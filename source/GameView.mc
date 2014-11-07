@@ -150,6 +150,12 @@ class GameDelegate extends Ui.InputDelegate {
     function onSwipe(evt) {
         var dir = evt.getDirection();
 
+        // Build a state of the game before this move
+        var preMove = new [numRowsColumns * numRowsColumns];
+        for (var i = 0; i < preMove.size(); ++i) {
+            preMove[i] = tiles[i];
+        }
+
         if (dir == Ui.SWIPE_UP) {
             slideUp(true);
         } else if (dir == Ui.SWIPE_RIGHT) {
@@ -160,7 +166,17 @@ class GameDelegate extends Ui.InputDelegate {
             slideLeft(true);
         }
 
-        addTile();
+        // Check if the gameboard differs from the pre-move state
+        var madeMove = false;
+        for (var i = 0; !madeMove && (i < preMove.size()); ++i) {
+            madeMove = (preMove[i] != tiles[i]);
+        }
+
+        // If the board differs, add a tile and update score
+        if (madeMove) {
+            // TODO: keep score
+            addTile();
+        }
 
         Ui.requestUpdate();
     }
