@@ -3,6 +3,6 @@ using Toybox.WatchUi as Ui;
 
 class GameApp extends App.AppBase {
     function getInitialView() {
-        return [ new GameView(), new GameDelegate() ];
+        return [ new PlayView(), new PlayDelegate() ];
     }
 }
