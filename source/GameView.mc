@@ -6,8 +6,7 @@ const numRowsColumns = 4;
 var tiles = new [numRowsColumns * numRowsColumns];
 var gameOver = false;
 
-function addTile() {
-    // Check to make sure we haven't filled the screen
+function isFull() {
     var filled = true;
     for (var i = 0; i < tiles.size(); ++i) {
         if (tiles[i] == null) {
@@ -16,14 +15,19 @@ function addTile() {
         filled = filled && (tiles[i] != 0);
     }
 
-    if (filled) {
+    return filled;
+}
+
+function addTile() {
+    // Check to make sure we haven't filled the screen
+    if (isFull()) {
         gameOver = true;
     } else {
         var tilePos = 0;
 
         // If the entire screen isn't full, randomly
         // find an empty space and fill it with a tile
-        filled = true;
+        var filled = true;
         while (filled) {
             tilePos = Math.rand() % 16;
             filled = (tiles[tilePos] != 0);
@@ -207,20 +211,9 @@ class GameView extends Ui.View {
         var height = dc.getHeight();
         var width = dc.getWidth();
 
-        // Draw the Grid
+        // Draw the tiles
         var cellSize = height / numRowsColumns;
 
-        for (var i = 1; i < numRowsColumns; ++i) {
-            var y = i * cellSize;
-            dc.drawLine(width / 2 - (2 * cellSize), y, width / 2 + (2 * cellSize), y);
-        }
-
-        for (var i = -numRowsColumns / 2; i < numRowsColumns / 2 + 1; ++i) {
-            var x = (width / 2) - (i * cellSize);
-            dc.drawLine(x, 0, x, height);
-        }
-
-        // Draw the tiles
         for (var i = 0; i < tiles.size(); ++i) {
             var row = i / numRowsColumns;
             var col = i % numRowsColumns;
@@ -237,6 +230,18 @@ class GameView extends Ui.View {
                 dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
                     Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
             }
+        }
+
+        // Draw the Grid
+        dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
+        for (var i = 1; i < numRowsColumns; ++i) {
+            var y = i * cellSize;
+            dc.drawLine(width / 2 - (2 * cellSize), y, width / 2 + (2 * cellSize), y);
+        }
+
+        for (var i = -numRowsColumns / 2; i < numRowsColumns / 2 + 1; ++i) {
+            var x = (width / 2) - (i * cellSize);
+            dc.drawLine(x, 0, x, height);
         }
 
         if (gameOver) {
