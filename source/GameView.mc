@@ -4,6 +4,8 @@ using Toybox.System as Sys;
 
 const numRowsColumns = 4;
 var tiles = new [numRowsColumns * numRowsColumns];
+var screenHeight = 0;
+var upDownMinX = 0;
 var gameOver = false;
 
 function isFull() {
@@ -150,13 +152,15 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function onTap(evt) {
-        // Temporarily use tap for up swipe
-        onSwipe(new Ui.SwipeEvent(Ui.SWIPE_UP));
-    }
-
-    function onHold(evt) {
-        // Temporarily use hold for down swipe
-        onSwipe(new Ui.SwipeEvent(Ui.SWIPE_DOWN));
+        // Temporarily use tap for up/down swipe
+        var coord = evt.getCoordinates();
+        if (coord[0] > upDownMinX) {
+            if (coord[1] < (screenHeight / 2)) {
+                onSwipe(new Ui.SwipeEvent(Ui.SWIPE_UP));
+            } else {
+                onSwipe(new Ui.SwipeEvent(Ui.SWIPE_DOWN));
+            }
+        }
     }
 
     function onSwipe(evt) {
@@ -198,6 +202,8 @@ class GameView extends Ui.View {
         Math.srand(35);
         Score.resetCurrentScore();
 
+        screenHeight = dc.getHeight();
+
         // Add the first two tiles
         addTile();
         addTile();
@@ -213,13 +219,15 @@ class GameView extends Ui.View {
 
         // Draw the tiles
         var cellSize = height / numRowsColumns;
+        var centerWidth = cellSize * (numRowsColumns / 2);
+        upDownMinX = (cellSize * numRowsColumns);
 
         for (var i = 0; i < tiles.size(); ++i) {
             var row = i / numRowsColumns;
             var col = i % numRowsColumns;
 
             var rowPos = (row * cellSize);
-            var colPos = (width / 2) - ((2 - col) * cellSize);
+            var colPos = centerWidth - ((2 - col) * cellSize);
 
             var bgColor = getTileColor(tiles[i]);
             dc.setColor(bgColor, Gfx.COLOR_WHITE);
@@ -232,15 +240,18 @@ class GameView extends Ui.View {
             }
         }
 
+        // Draw up/down arrows
+        drawUpDownArrows(dc);
+
         // Draw the Grid
         dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
         for (var i = 1; i < numRowsColumns; ++i) {
             var y = i * cellSize;
-            dc.drawLine(width / 2 - (2 * cellSize), y, width / 2 + (2 * cellSize), y);
+            dc.drawLine(centerWidth - (2 * cellSize), y, centerWidth + (2 * cellSize), y);
         }
 
         for (var i = -numRowsColumns / 2; i < numRowsColumns / 2 + 1; ++i) {
-            var x = (width / 2) - (i * cellSize);
+            var x = centerWidth - (i * cellSize);
             dc.drawLine(x, 0, x, height);
         }
 
@@ -249,6 +260,30 @@ class GameView extends Ui.View {
             dc.drawText(width / 2, height / 2,
                 Gfx.FONT_LARGE, "GAME OVER!", Gfx.TEXT_JUSTIFY_CENTER);
         }
+    }
+
+    function drawUpDownArrows(dc) {
+        var height = dc.getHeight();
+        var width = dc.getWidth();
+
+        dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_WHITE);
+        dc.fillRectangle(upDownMinX, 0, (width - upDownMinX), height);
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
+
+        var arrowCenter = upDownMinX + (width - upDownMinX) / 2;
+        var arrowHeight = height / 8;
+        var arrowWidth = (width - upDownMinX) / 3;
+
+        var arrow = new [3];
+        arrow[0] = [arrowCenter, height / 4];
+        arrow[1] = [arrowCenter - (arrowWidth / 2), arrow[0][1] + arrowHeight];
+        arrow[2] = [arrowCenter + (arrowWidth / 2), arrow[0][1] + arrowHeight];
+        dc.fillPolygon(arrow);
+
+        arrow[0] = [arrowCenter, 3 * height / 4];
+        arrow[1] = [arrowCenter - (arrowWidth / 2), arrow[0][1] - arrowHeight];
+        arrow[2] = [arrowCenter + (arrowWidth / 2), arrow[0][1] - arrowHeight];
+        dc.fillPolygon(arrow);
     }
 
     function getTileColor(tile) {
