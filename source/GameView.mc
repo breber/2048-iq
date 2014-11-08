@@ -1,6 +1,7 @@
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.System as Sys;
+using Toybox.Time;
 
 const numRowsColumns = 4;
 var tiles = new [numRowsColumns * numRowsColumns];
@@ -40,17 +41,6 @@ function addTile() {
 }
 
 class GameDelegate extends Ui.InputDelegate {
-    function printGrid() {
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < numRowsColumns; ++col) {
-                var curIdx = numRowsColumns * row + col;
-                Sys.print(tiles[curIdx].format("%4d"));
-            }
-            Sys.println("");
-        }
-        Sys.println("");
-    }
-
     function rotateClockwise() {
         // Mirror across row
         for (var row = 0; row < numRowsColumns; ++row) {
@@ -84,6 +74,8 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function slideUp(combine) {
+        // Slide up is the same as rotating the grid clockwise
+        // 180 degrees, sliding down then rotating another 180 degrees
         rotateClockwise();
         rotateClockwise();
 
@@ -94,6 +86,8 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function slideLeft(combine) {
+        // Slide left is the same as rotating the grid clockwise
+        // 270 degrees, sliding down then rotating another 90 degrees
         rotateClockwise();
         rotateClockwise();
         rotateClockwise();
@@ -104,6 +98,8 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function slideRight(combine) {
+        // Slide right is the same as rotating the grid clockwise
+        // 90 degrees, sliding down then rotating another 270 degrees
         rotateClockwise();
 
         slideDown(combine);
@@ -199,7 +195,7 @@ class GameDelegate extends Ui.InputDelegate {
 
 class GameView extends Ui.View {
     function onLayout(dc) {
-        Math.srand(35);
+        Math.srand(Time.now().value());
         Score.resetCurrentScore();
 
         screenHeight = dc.getHeight();

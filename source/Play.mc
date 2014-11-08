@@ -17,7 +17,7 @@ class PlayView extends Ui.View {
         var width = dc.getWidth();
 
         dc.drawText(width / 2, height / 2,
-            Gfx.FONT_MEDIUM, "Click to Play!", Gfx.TEXT_JUSTIFY_CENTER);
+            Gfx.FONT_LARGE, "Click to Play!", Gfx.TEXT_JUSTIFY_CENTER);
 
         dc.drawText(width / 2, height / 2 + 30,
             Gfx.FONT_SMALL, "High Score: " + Score.getHighScore(), Gfx.TEXT_JUSTIFY_CENTER);
