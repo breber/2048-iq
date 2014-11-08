@@ -3,150 +3,12 @@ using Toybox.Graphics as Gfx;
 using Toybox.System as Sys;
 using Toybox.Time;
 
-const numRowsColumns = 4;
-var tiles = new [numRowsColumns * numRowsColumns];
+var grid = new Grid();
 var screenHeight = 0;
 var upDownMinX = 0;
 var gameOver = false;
 
-function isFull() {
-    var filled = true;
-    for (var i = 0; i < tiles.size(); ++i) {
-        if (tiles[i] == null) {
-            tiles[i] = 0;
-        }
-        filled = filled && (tiles[i] != 0);
-    }
-
-    return filled;
-}
-
-function addTile() {
-    // Check to make sure we haven't filled the screen
-    if (isFull()) {
-        gameOver = true;
-    } else {
-        var tilePos = 0;
-
-        // If the entire screen isn't full, randomly
-        // find an empty space and fill it with a tile
-        var filled = true;
-        while (filled) {
-            tilePos = Math.rand() % 16;
-            filled = (tiles[tilePos] != 0);
-        }
-
-        tiles[tilePos] = ((Math.rand() % 4) == 0) ? 4 : 2;
-    }
-}
-
 class GameDelegate extends Ui.InputDelegate {
-    function rotateClockwise() {
-        // Mirror across row
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < (numRowsColumns / 2); ++col) {
-                var curIdx = numRowsColumns * row + col;
-                var newIdx = numRowsColumns * row + (numRowsColumns - col - 1);
-
-                tiles[newIdx] ^= tiles[curIdx];
-                tiles[curIdx] ^= tiles[newIdx];
-                tiles[newIdx] ^= tiles[curIdx];
-            }
-        }
-
-        // Copy all values to the temporary array and
-        // reset the tiles array
-        var tempArr = new [numRowsColumns * numRowsColumns];
-        for (var i = 0; i < tempArr.size(); ++i) {
-            tempArr[i] = tiles[i];
-            tiles[i] = 0;
-        }
-
-        // Mirror across diagonal
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < numRowsColumns; ++col) {
-                var curIdx = numRowsColumns * row + col;
-                var newIdx = tiles.size() - 1 - row - (numRowsColumns * col);
-
-                tiles[newIdx] = tempArr[curIdx];
-            }
-        }
-    }
-
-    function slideUp(combine) {
-        // Slide up is the same as rotating the grid clockwise
-        // 180 degrees, sliding down then rotating another 180 degrees
-        rotateClockwise();
-        rotateClockwise();
-
-        slideDown(combine);
-
-        rotateClockwise();
-        rotateClockwise();
-    }
-
-    function slideLeft(combine) {
-        // Slide left is the same as rotating the grid clockwise
-        // 270 degrees, sliding down then rotating another 90 degrees
-        rotateClockwise();
-        rotateClockwise();
-        rotateClockwise();
-
-        slideDown(combine);
-
-        rotateClockwise();
-    }
-
-    function slideRight(combine) {
-        // Slide right is the same as rotating the grid clockwise
-        // 90 degrees, sliding down then rotating another 270 degrees
-        rotateClockwise();
-
-        slideDown(combine);
-
-        rotateClockwise();
-        rotateClockwise();
-        rotateClockwise();
-    }
-
-    function slideDown(combine) {
-        for (var col = 0; col < numRowsColumns; ++col) {
-            for (var row = numRowsColumns - 1; row >= 0; --row) {
-                var curIdx = numRowsColumns * row + col;
-                if (tiles[curIdx] == 0) {
-                    for (var subRow = row; subRow >= 0; --subRow) {
-                        var subIdx = numRowsColumns * subRow + col;
-                        if (tiles[subIdx] != 0) {
-                            tiles[curIdx] = tiles[subIdx];
-                            tiles[subIdx] = 0;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (combine) {
-                for (var row = numRowsColumns - 1; row > 0; --row) {
-                    var curIdx = numRowsColumns * row + col;
-                    var nextIdx = numRowsColumns * (row - 1) + col;
-
-                    if ((tiles[curIdx] != 0) &&
-                        (tiles[curIdx] == tiles[nextIdx]))
-                    {
-                        tiles[curIdx] <<= 1;
-                        Score.addToCurrentScore(tiles[curIdx]);
-                        tiles[nextIdx] = 0;
-                        row -= 2;
-                    }
-                }
-            }
-        }
-
-        if (combine) {
-            slideDown(false);
-        }
-    }
-
     function onTap(evt) {
         // Temporarily use tap for up/down swipe
         var coord = evt.getCoordinates();
@@ -162,31 +24,27 @@ class GameDelegate extends Ui.InputDelegate {
     function onSwipe(evt) {
         var dir = evt.getDirection();
 
-        // Build a state of the game before this move
-        var preMove = new [numRowsColumns * numRowsColumns];
-        for (var i = 0; i < preMove.size(); ++i) {
-            preMove[i] = tiles[i];
-        }
+        grid.startMove();
 
         if (dir == Ui.SWIPE_UP) {
-            slideUp(true);
+            grid.slideUp();
         } else if (dir == Ui.SWIPE_RIGHT) {
-            slideRight(true);
+            grid.slideRight();
         } else if (dir == Ui.SWIPE_DOWN) {
-            slideDown(true);
+            grid.slideDown();
         } else if (dir == Ui.SWIPE_LEFT) {
-            slideLeft(true);
-        }
-
-        // Check if the gameboard differs from the pre-move state
-        var madeMove = false;
-        for (var i = 0; !madeMove && (i < preMove.size()); ++i) {
-            madeMove = (preMove[i] != tiles[i]);
+            grid.slideLeft();
         }
 
         // If the board differs, add a tile and update score
-        if (madeMove) {
-            addTile();
+        if (grid.hasChanges()) {
+            grid.addTile();
+        }
+
+        // If the grid is full, check to make sure
+        // that there are still moves that can be made
+        if (grid.isFull()) {
+            gameOver = !grid.containsValidMoves();
         }
 
         Ui.requestUpdate();
@@ -201,8 +59,8 @@ class GameView extends Ui.View {
         screenHeight = dc.getHeight();
 
         // Add the first two tiles
-        addTile();
-        addTile();
+        grid.addTile();
+        grid.addTile();
     }
 
     //! Update the view
@@ -214,13 +72,14 @@ class GameView extends Ui.View {
         var width = dc.getWidth();
 
         // Draw the tiles
-        var cellSize = height / numRowsColumns;
-        var centerWidth = cellSize * (numRowsColumns / 2);
-        upDownMinX = (cellSize * numRowsColumns);
+        var cellSize = height / grid.numRowsColumns;
+        var centerWidth = cellSize * (grid.numRowsColumns / 2);
+        upDownMinX = (cellSize * grid.numRowsColumns);
 
+        var tiles = grid.getGrid();
         for (var i = 0; i < tiles.size(); ++i) {
-            var row = i / numRowsColumns;
-            var col = i % numRowsColumns;
+            var row = i / grid.numRowsColumns;
+            var col = i % grid.numRowsColumns;
 
             var rowPos = (row * cellSize);
             var colPos = centerWidth - ((2 - col) * cellSize);
@@ -241,12 +100,12 @@ class GameView extends Ui.View {
 
         // Draw the Grid
         dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
-        for (var i = 1; i < numRowsColumns; ++i) {
+        for (var i = 1; i < grid.numRowsColumns; ++i) {
             var y = i * cellSize;
             dc.drawLine(centerWidth - (2 * cellSize), y, centerWidth + (2 * cellSize), y);
         }
 
-        for (var i = -numRowsColumns / 2; i < numRowsColumns / 2 + 1; ++i) {
+        for (var i = -grid.numRowsColumns / 2; i < grid.numRowsColumns / 2 + 1; ++i) {
             var x = centerWidth - (i * cellSize);
             dc.drawLine(x, 0, x, height);
         }
