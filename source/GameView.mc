@@ -7,21 +7,26 @@ var tiles = new [numRowsColumns * numRowsColumns];
 var gameOver = false;
 
 function addTile() {
-    var tilePos;
-
     // Check to make sure we haven't filled the screen
     var filled = true;
     for (var i = 0; i < tiles.size(); ++i) {
-        filled = filled && (tiles[i] != null);
+        if (tiles[i] == null) {
+            tiles[i] = 0;
+        }
+        filled = filled && (tiles[i] != 0);
     }
 
     if (filled) {
         gameOver = true;
     } else {
+        var tilePos = 0;
+
+        // If the entire screen isn't full, randomly
+        // find an empty space and fill it with a tile
         filled = true;
         while (filled) {
             tilePos = Math.rand() % 16;
-            filled = (tiles[tilePos] != null);
+            filled = (tiles[tilePos] != 0);
         }
 
         tiles[tilePos] = ((Math.rand() % 4) == 0) ? 4 : 2;
@@ -33,8 +38,7 @@ class GameDelegate extends Ui.InputDelegate {
         for (var row = 0; row < numRowsColumns; ++row) {
             for (var col = 0; col < numRowsColumns; ++col) {
                 var curIdx = numRowsColumns * row + col;
-                var value = (tiles[curIdx] == null) ? 0 : tiles[curIdx];
-                Sys.print(value.format("%4d"));
+                Sys.print(tiles[curIdx].format("%4d"));
             }
             Sys.println("");
         }
@@ -42,31 +46,24 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function rotateClockwise() {
-        var tempArr = new [numRowsColumns * numRowsColumns];
-
-        // Copy all values to the temporary array and
-        // reset the tiles array
-        for (var i = 0; i < tempArr.size(); ++i) {
-            tempArr[i] = tiles[i];
-            tiles[i] = null;
-        }
-
         // Mirror across row
         for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < numRowsColumns; ++col) {
+            for (var col = 0; col < (numRowsColumns / 2); ++col) {
                 var curIdx = numRowsColumns * row + col;
                 var newIdx = numRowsColumns * row + (numRowsColumns - col - 1);
 
-                tiles[newIdx] = tempArr[curIdx];
-                tempArr[curIdx] = null;
+                tiles[newIdx] ^= tiles[curIdx];
+                tiles[curIdx] ^= tiles[newIdx];
+                tiles[newIdx] ^= tiles[curIdx];
             }
         }
 
         // Copy all values to the temporary array and
         // reset the tiles array
+        var tempArr = new [numRowsColumns * numRowsColumns];
         for (var i = 0; i < tempArr.size(); ++i) {
             tempArr[i] = tiles[i];
-            tiles[i] = null;
+            tiles[i] = 0;
         }
 
         // Mirror across diagonal
@@ -114,12 +111,12 @@ class GameDelegate extends Ui.InputDelegate {
         for (var col = 0; col < numRowsColumns; ++col) {
             for (var row = numRowsColumns - 1; row >= 0; --row) {
                 var curIdx = numRowsColumns * row + col;
-                if (tiles[curIdx] == null) {
+                if (tiles[curIdx] == 0) {
                     for (var subRow = row; subRow >= 0; --subRow) {
                         var subIdx = numRowsColumns * subRow + col;
-                        if (tiles[subIdx] != null) {
+                        if (tiles[subIdx] != 0) {
                             tiles[curIdx] = tiles[subIdx];
-                            tiles[subIdx] = null;
+                            tiles[subIdx] = 0;
                             break;
                         }
                     }
@@ -131,12 +128,12 @@ class GameDelegate extends Ui.InputDelegate {
                     var curIdx = numRowsColumns * row + col;
                     var nextIdx = numRowsColumns * (row - 1) + col;
 
-                    if ((tiles[curIdx] != null) &&
+                    if ((tiles[curIdx] != 0) &&
                         (tiles[curIdx] == tiles[nextIdx]))
                     {
                         tiles[curIdx] <<= 1;
                         Score.addToCurrentScore(tiles[curIdx]);
-                        tiles[nextIdx] = null;
+                        tiles[nextIdx] = 0;
                         row -= 2;
                     }
                 }
@@ -235,9 +232,11 @@ class GameView extends Ui.View {
             dc.setColor(bgColor, Gfx.COLOR_WHITE);
             dc.fillRectangle(colPos, rowPos, cellSize, cellSize);
 
-            dc.setColor(Gfx.COLOR_WHITE, bgColor);
-            dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
-                Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+            if (tiles[i] != 0) {
+                dc.setColor(Gfx.COLOR_WHITE, bgColor);
+                dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
+                    Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+            }
         }
 
         if (gameOver) {
