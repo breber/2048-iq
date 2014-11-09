@@ -1,5 +1,5 @@
 class Grid {
-    const numRowsColumns = 4;
+    static const GRID_SIZE = 4;
 
     function initialize() {
         Score.resetCurrentScore();
@@ -25,13 +25,13 @@ class Grid {
         changeMade = false;
 
         if (dir == DIR_UP) {
-            grid.slideUp(true);
+            grid.slideUp();
         } else if (dir == DIR_RIGHT) {
-            grid.slideRight(true);
+            grid.slideRight();
         } else if (dir == DIR_DOWN) {
             grid.slideDown(true);
         } else if (dir == DIR_LEFT) {
-            grid.slideLeft(true);
+            grid.slideLeft();
         }
 
         // If the board differs, add a tile and update score
@@ -71,31 +71,31 @@ class Grid {
     hidden function hasValidMoves() {
         var moves = false;
 
-        for (var row = 0; !moves && (row < numRowsColumns); ++row) {
-            for (var col = 0; !moves && (col < (numRowsColumns / 2)); ++col) {
-                var curIdx = numRowsColumns * row + col;
+        for (var row = 0; !moves && (row < GRID_SIZE); ++row) {
+            for (var col = 0; !moves && (col < (GRID_SIZE / 2)); ++col) {
+                var curIdx = GRID_SIZE * row + col;
 
                 // Check above
                 if (row != 0) {
-                    var upIdx = numRowsColumns * (row - 1) + col;
+                    var upIdx = GRID_SIZE * (row - 1) + col;
                     moves = moves || (tiles[curIdx] == tiles[upIdx]);
                 }
 
                 // Check to the left
                 if (col != 0) {
-                    var leftIdx = numRowsColumns * row + (col - 1);
+                    var leftIdx = GRID_SIZE * row + (col - 1);
                     moves = moves || (tiles[curIdx] == tiles[leftIdx]);
                 }
 
                 // Check to the right
-                if (col != (numRowsColumns - 1)) {
-                    var rightIdx = numRowsColumns * row + (col + 1);
+                if (col != (GRID_SIZE - 1)) {
+                    var rightIdx = GRID_SIZE * row + (col + 1);
                     moves = moves || (tiles[curIdx] == tiles[rightIdx]);
                 }
 
                 // Check below
-                if (row != (numRowsColumns - 1)) {
-                    var downIdx = numRowsColumns * (row + 1) + col;
+                if (row != (GRID_SIZE - 1)) {
+                    var downIdx = GRID_SIZE * (row + 1) + col;
                     moves = moves || (tiles[curIdx] == tiles[downIdx]);
                 }
             }
@@ -106,10 +106,10 @@ class Grid {
 
     hidden function rotateClockwise() {
         // Mirror across row
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < (numRowsColumns / 2); ++col) {
-                var curIdx = numRowsColumns * row + col;
-                var newIdx = numRowsColumns * row + (numRowsColumns - col - 1);
+        for (var row = 0; row < GRID_SIZE; ++row) {
+            for (var col = 0; col < (GRID_SIZE / 2); ++col) {
+                var curIdx = GRID_SIZE * row + col;
+                var newIdx = GRID_SIZE * row + (GRID_SIZE - col - 1);
 
                 tiles[newIdx] ^= tiles[curIdx];
                 tiles[curIdx] ^= tiles[newIdx];
@@ -119,53 +119,53 @@ class Grid {
 
         // Copy all values to the temporary array and
         // reset the tiles array
-        var tempArr = new [numRowsColumns * numRowsColumns];
+        var tempArr = new [GRID_SIZE * GRID_SIZE];
         for (var i = 0; i < tempArr.size(); ++i) {
             tempArr[i] = tiles[i];
             tiles[i] = 0;
         }
 
         // Mirror across diagonal
-        for (var row = 0; row < numRowsColumns; ++row) {
-            for (var col = 0; col < numRowsColumns; ++col) {
-                var curIdx = numRowsColumns * row + col;
-                var newIdx = tiles.size() - 1 - row - (numRowsColumns * col);
+        for (var row = 0; row < GRID_SIZE; ++row) {
+            for (var col = 0; col < GRID_SIZE; ++col) {
+                var curIdx = GRID_SIZE * row + col;
+                var newIdx = tiles.size() - 1 - row - (GRID_SIZE * col);
 
                 tiles[newIdx] = tempArr[curIdx];
             }
         }
     }
 
-    hidden function slideUp(combine) {
+    hidden function slideUp() {
         // Slide up is the same as rotating the grid clockwise
         // 180 degrees, sliding down then rotating another 180 degrees
         rotateClockwise();
         rotateClockwise();
 
-        slideDown(combine);
+        slideDown(true);
 
         rotateClockwise();
         rotateClockwise();
     }
 
-    hidden function slideLeft(combine) {
+    hidden function slideLeft() {
         // Slide left is the same as rotating the grid clockwise
         // 270 degrees, sliding down then rotating another 90 degrees
         rotateClockwise();
         rotateClockwise();
         rotateClockwise();
 
-        slideDown(combine);
+        slideDown(true);
 
         rotateClockwise();
     }
 
-    hidden function slideRight(combine) {
+    hidden function slideRight() {
         // Slide right is the same as rotating the grid clockwise
         // 90 degrees, sliding down then rotating another 270 degrees
         rotateClockwise();
 
-        slideDown(combine);
+        slideDown(true);
 
         rotateClockwise();
         rotateClockwise();
@@ -173,12 +173,12 @@ class Grid {
     }
 
     hidden function slideDown(combine) {
-        for (var col = 0; col < numRowsColumns; ++col) {
-            for (var row = numRowsColumns - 1; row >= 0; --row) {
-                var curIdx = numRowsColumns * row + col;
+        for (var col = 0; col < GRID_SIZE; ++col) {
+            for (var row = GRID_SIZE - 1; row >= 0; --row) {
+                var curIdx = GRID_SIZE * row + col;
                 if (tiles[curIdx] == 0) {
                     for (var subRow = row; subRow >= 0; --subRow) {
-                        var subIdx = numRowsColumns * subRow + col;
+                        var subIdx = GRID_SIZE * subRow + col;
                         if (tiles[subIdx] != 0) {
                             tiles[curIdx] = tiles[subIdx];
                             tiles[subIdx] = 0;
@@ -190,9 +190,9 @@ class Grid {
             }
 
             if (combine) {
-                for (var row = numRowsColumns - 1; row > 0; --row) {
-                    var curIdx = numRowsColumns * row + col;
-                    var nextIdx = numRowsColumns * (row - 1) + col;
+                for (var row = GRID_SIZE - 1; row > 0; --row) {
+                    var curIdx = GRID_SIZE * row + col;
+                    var nextIdx = GRID_SIZE * (row - 1) + col;
 
                     if ((tiles[curIdx] != 0) &&
                         (tiles[curIdx] == tiles[nextIdx]))
@@ -213,5 +213,5 @@ class Grid {
     }
 
     hidden var changeMade = false;
-    hidden var tiles = new [numRowsColumns * numRowsColumns];
+    hidden var tiles = new [GRID_SIZE * GRID_SIZE];
 }

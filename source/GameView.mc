@@ -57,14 +57,14 @@ class GameView extends Ui.View {
         var width = dc.getWidth();
 
         // Draw the tiles
-        var cellSize = height / grid.numRowsColumns;
-        var centerWidth = cellSize * (grid.numRowsColumns / 2);
-        upDownMinX = (cellSize * grid.numRowsColumns);
+        var cellSize = height / Grid.GRID_SIZE;
+        var centerWidth = cellSize * (Grid.GRID_SIZE / 2);
+        upDownMinX = (cellSize * Grid.GRID_SIZE);
 
         var tiles = grid.getGrid();
         for (var i = 0; i < tiles.size(); ++i) {
-            var row = i / grid.numRowsColumns;
-            var col = i % grid.numRowsColumns;
+            var row = i / Grid.GRID_SIZE;
+            var col = i % Grid.GRID_SIZE;
 
             var rowPos = (row * cellSize);
             var colPos = centerWidth - ((2 - col) * cellSize);
@@ -85,12 +85,12 @@ class GameView extends Ui.View {
 
         // Draw the Grid
         dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
-        for (var i = 1; i < grid.numRowsColumns; ++i) {
+        for (var i = 1; i < Grid.GRID_SIZE; ++i) {
             var y = i * cellSize;
             dc.drawLine(centerWidth - (2 * cellSize), y, centerWidth + (2 * cellSize), y);
         }
 
-        for (var i = -grid.numRowsColumns / 2; i < grid.numRowsColumns / 2 + 1; ++i) {
+        for (var i = -Grid.GRID_SIZE / 2; i < Grid.GRID_SIZE / 2 + 1; ++i) {
             var x = centerWidth - (i * cellSize);
             dc.drawLine(x, 0, x, height);
         }

@@ -24,13 +24,13 @@ function getDirectionKey(key) {
 }
 
 function getDirectionSwipe(swipe) {
-    if (swipe == Ui.SWIPE_DOWN) {
-        return DIR_DOWN;
+    if (swipe == Ui.SWIPE_UP) {
+        return DIR_UP;
     } else if (swipe == Ui.SWIPE_LEFT) {
         return DIR_LEFT;
     } else if (swipe == Ui.SWIPE_RIGHT) {
         return DIR_RIGHT;
     } else {
-        return DIR_UP;
+        return DIR_DOWN;
     }
 }
