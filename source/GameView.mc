@@ -1,6 +1,5 @@
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
-using Toybox.Time;
 
 var grid = null;
 var screenHeight = 0;
