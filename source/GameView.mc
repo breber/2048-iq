@@ -1,12 +1,10 @@
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
-using Toybox.System as Sys;
 using Toybox.Time;
 
 var grid = new Grid();
 var screenHeight = 0;
 var upDownMinX = 0;
-var gameOver = false;
 
 class GameDelegate extends Ui.InputDelegate {
     function onTap(evt) {
@@ -47,12 +45,6 @@ class GameDelegate extends Ui.InputDelegate {
         // If the board differs, add a tile and update score
         if (grid.hasChanges()) {
             grid.addTile();
-        }
-
-        // If the grid is full, check to make sure
-        // that there are still moves that can be made
-        if (grid.isFull()) {
-            gameOver = !grid.containsValidMoves();
         }
 
         Ui.requestUpdate();
@@ -118,8 +110,8 @@ class GameView extends Ui.View {
             dc.drawLine(x, 0, x, height);
         }
 
-        if (gameOver) {
-            dc.setColor(Gfx.COLOR_TRANSPARENT, Gfx.COLOR_WHITE);
+        if (grid.isGameOver()) {
+            dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
             dc.drawText(width / 2, height / 2,
                 Gfx.FONT_LARGE, "GAME OVER!", Gfx.TEXT_JUSTIFY_CENTER);
         }

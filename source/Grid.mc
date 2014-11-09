@@ -17,6 +17,10 @@ class Grid {
         return changeMade;
     }
 
+    function isGameOver() {
+        return isFull() && !hasValidMoves();
+    }
+
     function isFull() {
         var filled = true;
         for (var i = 0; filled && (i < tiles.size()); ++i) {
@@ -61,10 +65,38 @@ class Grid {
         slideRightInternal(true);
     }
 
-    function checkValidMoves() {
-        var moves = true;
+    hidden function hasValidMoves() {
+        var moves = false;
 
-        // TODO: implement
+        for (var row = 0; !moves && (row < numRowsColumns); ++row) {
+            for (var col = 0; !moves && (col < (numRowsColumns / 2)); ++col) {
+                var curIdx = numRowsColumns * row + col;
+
+                // Check above
+                if (row != 0) {
+                    var upIdx = numRowsColumns * (row - 1) + col;
+                    moves = moves || (tiles[curIdx] == tiles[upIdx]);
+                }
+
+                // Check to the left
+                if (col != 0) {
+                    var leftIdx = numRowsColumns * row + (col - 1);
+                    moves = moves || (tiles[curIdx] == tiles[leftIdx]);
+                }
+
+                // Check to the right
+                if (col != (numRowsColumns - 1)) {
+                    var rightIdx = numRowsColumns * row + (col + 1);
+                    moves = moves || (tiles[curIdx] == tiles[rightIdx]);
+                }
+
+                // Check below
+                if (row != (numRowsColumns - 1)) {
+                    var downIdx = numRowsColumns * (row + 1) + col;
+                    moves = moves || (tiles[curIdx] == tiles[downIdx]);
+                }
+            }
+        }
 
         return moves;
     }
