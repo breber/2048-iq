@@ -49,7 +49,7 @@ class GameView extends Ui.View {
 
     //! Update the view
     function onUpdate(dc) {
-        dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
+        dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_BLACK);
         dc.clear();
 
         var height = dc.getHeight();
@@ -79,9 +79,6 @@ class GameView extends Ui.View {
             }
         }
 
-        // Draw up/down arrows
-        drawUpDownArrows(dc);
-
         // Draw the Grid
         dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
         for (var i = 1; i < Grid.GRID_SIZE; ++i) {
@@ -93,6 +90,9 @@ class GameView extends Ui.View {
             var x = centerWidth - (i * cellSize);
             dc.drawLine(x, 0, x, height);
         }
+
+        // Draw up/down arrows
+        drawUpDownArrows(dc);
 
         if (grid.isGameOver()) {
             dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
@@ -154,6 +154,6 @@ class GameView extends Ui.View {
             }
         }
 
-        return Gfx.COLOR_TRANSPARENT;
+        return Gfx.COLOR_WHITE;
     }
 }
