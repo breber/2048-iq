@@ -14,25 +14,33 @@ class GameDelegate extends Ui.InputDelegate {
         var coord = evt.getCoordinates();
         if (coord[0] > upDownMinX) {
             if (coord[1] < (screenHeight / 2)) {
-                onSwipe(new Ui.SwipeEvent(Ui.SWIPE_UP));
+                processUpdate(DIR_UP);
             } else {
-                onSwipe(new Ui.SwipeEvent(Ui.SWIPE_DOWN));
+                processUpdate(DIR_DOWN);
             }
         }
     }
 
+    function onKey(evt) {
+        var key = evt.getKey();
+        processUpdate(getDirectionKey(key));
+    }
+
     function onSwipe(evt) {
         var dir = evt.getDirection();
+        processUpdate(getDirectionSwipe(dir));
+    }
 
+    function processUpdate(dir) {
         grid.startMove();
 
-        if (dir == Ui.SWIPE_UP) {
+        if (dir == DIR_UP) {
             grid.slideUp();
-        } else if (dir == Ui.SWIPE_RIGHT) {
+        } else if (dir == DIR_RIGHT) {
             grid.slideRight();
-        } else if (dir == Ui.SWIPE_DOWN) {
+        } else if (dir == DIR_DOWN) {
             grid.slideDown();
-        } else if (dir == Ui.SWIPE_LEFT) {
+        } else if (dir == DIR_LEFT) {
             grid.slideLeft();
         }
 

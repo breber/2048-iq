@@ -2,7 +2,17 @@ using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 
 class PlayDelegate extends Ui.InputDelegate {
-    function onTap() {
+    function onTap(evt) {
+        pushView();
+    }
+
+    function onKey(evt) {
+        if (evt.getKey() == Ui.KEY_ENTER) {
+            pushView();
+        }
+    }
+
+    function pushView() {
         Ui.pushView(new GameView(), new GameDelegate(), Ui.SLIDE_IMMEDIATE);
     }
 }

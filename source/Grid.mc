@@ -1,6 +1,4 @@
-
 class Grid {
-
     function initialize() {
         for (var i = 0; i < tiles.size(); ++i) {
             tiles[i] = 0;

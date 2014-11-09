@@ -3,10 +3,10 @@
 
         <iq:products>
             <iq:product id="square_watch"/>
+            <iq:product id="fr920xt"/>
         </iq:products>
 
-        <iq:permissions>
-        </iq:permissions>
+        <iq:permissions/>
 
         <iq:langauges>
         </iq:langauges>
