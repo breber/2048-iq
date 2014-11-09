@@ -1,40 +1,50 @@
 class Grid {
+    const numRowsColumns = 4;
+
     function initialize() {
+        Score.resetCurrentScore();
+
         for (var i = 0; i < tiles.size(); ++i) {
             tiles[i] = 0;
         }
+
+        // Add the first two tiles
+        addTile();
+        addTile();
     }
 
     function getGrid() {
         return tiles;
     }
 
-    function startMove() {
-        changeMade = false;
-    }
-
-    function hasChanges() {
-        return changeMade;
-    }
-
     function isGameOver() {
         return isFull() && !hasValidMoves();
     }
 
-    function isFull() {
-        var filled = true;
-        for (var i = 0; filled && (i < tiles.size()); ++i) {
-            filled = (tiles[i] != 0);
+    function processMove(dir) {
+        changeMade = false;
+
+        if (dir == DIR_UP) {
+            grid.slideUp(true);
+        } else if (dir == DIR_RIGHT) {
+            grid.slideRight(true);
+        } else if (dir == DIR_DOWN) {
+            grid.slideDown(true);
+        } else if (dir == DIR_LEFT) {
+            grid.slideLeft(true);
         }
 
-        return filled;
+        // If the board differs, add a tile and update score
+        if (changeMade) {
+            addTile();
+        }
     }
 
-    function addTile() {
+    // Implementation
+
+    hidden function addTile() {
         // Check to make sure we haven't filled the screen
-        if (isFull()) {
-            gameOver = true;
-        } else {
+        if (!isFull()) {
             var tilePos = 0;
 
             // If the entire screen isn't full, randomly
@@ -49,20 +59,13 @@ class Grid {
         }
     }
 
-    function slideUp() {
-        slideUpInternal(true);
-    }
+    hidden function isFull() {
+        var filled = true;
+        for (var i = 0; filled && (i < tiles.size()); ++i) {
+            filled = (tiles[i] != 0);
+        }
 
-    function slideDown() {
-        slideDownInternal(true);
-    }
-
-    function slideLeft() {
-        slideLeftInternal(true);
-    }
-
-    function slideRight() {
-        slideRightInternal(true);
+        return filled;
     }
 
     hidden function hasValidMoves() {
@@ -133,44 +136,43 @@ class Grid {
         }
     }
 
-
-    hidden function slideUpInternal(combine) {
+    hidden function slideUp(combine) {
         // Slide up is the same as rotating the grid clockwise
         // 180 degrees, sliding down then rotating another 180 degrees
         rotateClockwise();
         rotateClockwise();
 
-        slideDownInternal(combine);
+        slideDown(combine);
 
         rotateClockwise();
         rotateClockwise();
     }
 
-    hidden function slideLeftInternal(combine) {
+    hidden function slideLeft(combine) {
         // Slide left is the same as rotating the grid clockwise
         // 270 degrees, sliding down then rotating another 90 degrees
         rotateClockwise();
         rotateClockwise();
         rotateClockwise();
 
-        slideDownInternal(combine);
+        slideDown(combine);
 
         rotateClockwise();
     }
 
-    hidden function slideRightInternal(combine) {
+    hidden function slideRight(combine) {
         // Slide right is the same as rotating the grid clockwise
         // 90 degrees, sliding down then rotating another 270 degrees
         rotateClockwise();
 
-        slideDownInternal(combine);
+        slideDown(combine);
 
         rotateClockwise();
         rotateClockwise();
         rotateClockwise();
     }
 
-    hidden function slideDownInternal(combine) {
+    hidden function slideDown(combine) {
         for (var col = 0; col < numRowsColumns; ++col) {
             for (var row = numRowsColumns - 1; row >= 0; --row) {
                 var curIdx = numRowsColumns * row + col;
@@ -206,11 +208,10 @@ class Grid {
         }
 
         if (combine) {
-            slideDownInternal(false);
+            slideDown(false);
         }
     }
 
-    const numRowsColumns = 4;
     hidden var changeMade = false;
     hidden var tiles = new [numRowsColumns * numRowsColumns];
 }

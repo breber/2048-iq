@@ -2,65 +2,50 @@ using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.Time;
 
-var grid = new Grid();
+var grid = null;
 var screenHeight = 0;
 var upDownMinX = 0;
 
 class GameDelegate extends Ui.InputDelegate {
     function onTap(evt) {
-        // Temporarily use tap for up/down swipe
-        var coord = evt.getCoordinates();
-        if (coord[0] > upDownMinX) {
-            if (coord[1] < (screenHeight / 2)) {
-                processUpdate(DIR_UP);
-            } else {
-                processUpdate(DIR_DOWN);
+        if (grid != null) {
+            // Process taps on up/down arrows
+            var coord = evt.getCoordinates();
+            if (coord[0] > upDownMinX) {
+                if (coord[1] < (screenHeight / 2)) {
+                    grid.processMove(DIR_UP);
+                } else {
+                    grid.processMove(DIR_DOWN);
+                }
+
+                Ui.requestUpdate();
             }
         }
     }
 
     function onKey(evt) {
-        var key = evt.getKey();
-        processUpdate(getDirectionKey(key));
+        if (grid != null) {
+            var key = evt.getKey();
+            grid.processMove(getDirectionKey(key));
+
+            Ui.requestUpdate();
+        }
     }
 
     function onSwipe(evt) {
-        var dir = evt.getDirection();
-        processUpdate(getDirectionSwipe(dir));
-    }
+        if (grid != null) {
+            var dir = evt.getDirection();
+            grid.processMove(getDirectionSwipe(dir));
 
-    function processUpdate(dir) {
-        grid.startMove();
-
-        if (dir == DIR_UP) {
-            grid.slideUp();
-        } else if (dir == DIR_RIGHT) {
-            grid.slideRight();
-        } else if (dir == DIR_DOWN) {
-            grid.slideDown();
-        } else if (dir == DIR_LEFT) {
-            grid.slideLeft();
+            Ui.requestUpdate();
         }
-
-        // If the board differs, add a tile and update score
-        if (grid.hasChanges()) {
-            grid.addTile();
-        }
-
-        Ui.requestUpdate();
     }
 }
 
 class GameView extends Ui.View {
     function onLayout(dc) {
-        Math.srand(Time.now().value());
-        Score.resetCurrentScore();
-
+        grid = new Grid();
         screenHeight = dc.getHeight();
-
-        // Add the first two tiles
-        grid.addTile();
-        grid.addTile();
     }
 
     //! Update the view
@@ -114,6 +99,8 @@ class GameView extends Ui.View {
             dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
             dc.drawText(width / 2, height / 2,
                 Gfx.FONT_LARGE, "GAME OVER!", Gfx.TEXT_JUSTIFY_CENTER);
+            dc.drawText(width / 2, height / 2 + 20,
+                Gfx.FONT_SMALL, "Score: " + Score.getCurrentScore(), Gfx.TEXT_JUSTIFY_CENTER);
         }
     }
 
