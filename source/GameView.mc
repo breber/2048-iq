@@ -80,6 +80,9 @@ class GameView extends Ui.View {
 
             if (tiles[i] != 0) {
                 dc.setColor(Gfx.COLOR_WHITE, bgColor);
+//              TODO: handle numbers with 4 characters
+//                dc.drawText(colPos + cellSize / 2 + 1, rowPos + .65 * cellSize,
+//                    Gfx.FONT_SMALL,  tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
                 dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
                     Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
             }
