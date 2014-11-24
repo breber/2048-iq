@@ -1,3 +1,7 @@
 <resources>
-
+    <string id="AppName">2048</string>
+    <bitmap id="LauncherIcon" filename="images/launcher_icon.png" />
+	
+    <string id="has_touchscreen">false</string>
+    <string id="device"></string>
 </resources>

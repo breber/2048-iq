@@ -1,0 +1,4 @@
+<resources>
+    <string id="has_touchscreen">true</string>
+    <string id="device">square_watch</string>
+</resources>

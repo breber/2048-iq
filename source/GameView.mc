@@ -42,6 +42,12 @@ class GameDelegate extends Ui.InputDelegate {
 }
 
 class GameView extends Ui.View {
+    hidden var TOUCHSCREEN = "false";
+
+    function initialize() {
+        TOUCHSCREEN = ("true".equals(Ui.loadResource(Rez.Strings.has_touchscreen)));
+    }
+
     function onLayout(dc) {
         grid = new Grid();
         screenHeight = dc.getHeight();
@@ -57,7 +63,7 @@ class GameView extends Ui.View {
 
         // Draw the tiles
         var cellSize = height / Grid.GRID_SIZE;
-        var centerWidth = cellSize * (Grid.GRID_SIZE / 2);
+        var centerWidth = TOUCHSCREEN ? (cellSize * (Grid.GRID_SIZE / 2)) : (width / 2);
         upDownMinX = (cellSize * Grid.GRID_SIZE);
 
         var tiles = grid.getGrid();
@@ -92,7 +98,9 @@ class GameView extends Ui.View {
         }
 
         // Draw up/down arrows
-        drawUpDownArrows(dc);
+        if (TOUCHSCREEN) {
+            drawUpDownArrows(dc);
+        }
 
         if (grid.isGameOver()) {
             dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
