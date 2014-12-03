@@ -147,15 +147,15 @@ class GameView extends Ui.View {
             } else if (tile == 8) {
                 return Gfx.COLOR_ORANGE;
             } else if (tile == 16) {
-                return Gfx.COLOR_DK_ORANGE;
+                return Gfx.COLOR_PINK;
             } else if (tile == 32) {
                 return Gfx.COLOR_RED;
             } else if (tile == 64) {
                 return Gfx.COLOR_DK_RED;
             } else if (tile == 128) {
-                return Gfx.COLOR_YELLOW;
+                return Gfx.COLOR_PURPLE;
             } else if (tile == 256) {
-                return Gfx.COLOR_DK_YELLOW;
+                return Gfx.COLOR_YELLOW;
             } else if (tile == 512) {
                 return Gfx.COLOR_GREEN;
             } else if (tile == 1024) {
