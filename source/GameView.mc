@@ -1,3 +1,5 @@
+using Grid as Grid;
+using Score as Score;
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 
@@ -49,7 +51,7 @@ class GameView extends Ui.View {
     }
 
     function onLayout(dc) {
-        grid = new Grid();
+        grid = new Grid.Grid();
         screenHeight = dc.getHeight();
     }
 

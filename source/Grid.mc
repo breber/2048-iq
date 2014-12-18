@@ -1,3 +1,5 @@
+using Score as Score;
+
 class Grid {
     static const GRID_SIZE = 4;
 
