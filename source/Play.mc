@@ -21,7 +21,7 @@ class PlayDelegate extends Ui.InputDelegate {
 class PlayView extends Ui.View {
     //! Update the view
     function onUpdate(dc) {
-        dc.setColor(Gfx.COLOR_BLUE, Gfx.COLOR_BLACK);
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLUE);
         dc.clear();
 
         var height = dc.getHeight();
