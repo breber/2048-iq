@@ -20,7 +20,7 @@ class Grid {
     }
 
     function isGameOver() {
-        return isFull() && !hasValidMoves();
+        return has2048() || (isFull() && !hasValidMoves());
     }
 
     function processMove(dir) {
@@ -104,6 +104,16 @@ class Grid {
         }
 
         return moves;
+    }
+
+    hidden function has2048() {
+        for (var i = 0; i < tiles.size(); ++i) {
+            if (tiles[i] == 2048) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     hidden function rotateClockwise() {

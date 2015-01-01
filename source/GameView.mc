@@ -9,7 +9,7 @@ var upDownMinX = 0;
 
 class GameDelegate extends Ui.InputDelegate {
     function onTap(evt) {
-        if (grid != null) {
+        if (!handleGameOver() && (grid != null)) {
             // Process taps on up/down arrows
             var coord = evt.getCoordinates();
             if (coord[0] > upDownMinX) {
@@ -25,7 +25,7 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function onKey(evt) {
-        if (grid != null) {
+        if (!handleGameOver() && (grid != null)) {
             var key = evt.getKey();
             grid.processMove(getDirectionKey(key));
 
@@ -34,12 +34,25 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function onSwipe(evt) {
-        if (grid != null) {
+        if (!handleGameOver() && (grid != null)) {
             var dir = evt.getDirection();
             grid.processMove(getDirectionSwipe(dir));
 
             Ui.requestUpdate();
         }
+    }
+
+    function handleGameOver() {
+        if (grid != null) {
+            if (grid.isGameOver()) {
+                grid = new Grid.Grid();
+                Ui.requestUpdate();
+
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 
@@ -76,17 +89,23 @@ class GameView extends Ui.View {
             var rowPos = (row * cellSize);
             var colPos = centerWidth - ((2 - col) * cellSize);
 
-            var bgColor = getTileColor(tiles[i]);
-            dc.setColor(bgColor, Gfx.COLOR_WHITE);
+            var bgColor = grid.isGameOver() ? Gfx.COLOR_LT_GRAY : getTileColor(tiles[i]);
+            var textColor = grid.isGameOver() ? Gfx.COLOR_DK_GRAY : Gfx.COLOR_WHITE;
+            dc.setColor(bgColor, textColor);
             dc.fillRectangle(colPos, rowPos, cellSize, cellSize);
 
             if (tiles[i] != 0) {
-                dc.setColor(Gfx.COLOR_WHITE, bgColor);
-//              TODO: handle numbers with 4 characters
-//                dc.drawText(colPos + cellSize / 2 + 1, rowPos + .65 * cellSize,
-//                    Gfx.FONT_SMALL,  tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
-                dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
-                    Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+                dc.setColor(textColor, bgColor);
+
+                // Numbers with 4 characters need to be a bit smaller
+                // to fit in the square
+                if (tiles[i] > 1000) {
+                    dc.drawText(colPos + cellSize / 2 + 1, rowPos + .65 * cellSize,
+                        Gfx.FONT_SMALL,  tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+                } else {
+                    dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
+                        Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+                }
             }
         }
 
