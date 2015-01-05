@@ -27,10 +27,10 @@ class PlayView extends Ui.View {
         var height = dc.getHeight();
         var width = dc.getWidth();
 
-        dc.drawText(width / 2, height / 2,
+        dc.drawText(width / 2, height / 2 - dc.getFontHeight(Gfx.FONT_LARGE),
             Gfx.FONT_LARGE, "2048", Gfx.TEXT_JUSTIFY_CENTER);
 
-        dc.drawText(width / 2, height / 2 + 30,
+        dc.drawText(width / 2, height / 2,
             Gfx.FONT_SMALL, "High Score: " + Score.getHighScore(), Gfx.TEXT_JUSTIFY_CENTER);
     }
 }

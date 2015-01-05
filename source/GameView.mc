@@ -97,15 +97,20 @@ class GameView extends Ui.View {
             if (tiles[i] != 0) {
                 dc.setColor(textColor, bgColor);
 
-                // Numbers with 4 characters need to be a bit smaller
-                // to fit in the square
-                if (tiles[i] > 1000) {
-                    dc.drawText(colPos + cellSize / 2 + 1, rowPos + .65 * cellSize,
-                        Gfx.FONT_SMALL,  tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
-                } else {
-                    dc.drawText(colPos + cellSize / 2, rowPos + 3 * cellSize / 4,
-                        Gfx.FONT_MEDIUM, tiles[i] + "", Gfx.TEXT_JUSTIFY_CENTER);
+                var text = tiles[i] + "";
+                var font = Gfx.FONT_MEDIUM;
+
+                // Choose the right font size for the text
+                var textWidth = dc.getTextWidthInPixels(text, font);
+                if (textWidth >= cellSize) {
+                    font = Gfx.FONT_SMALL;
                 }
+
+                var centerCellX = colPos + cellSize / 2;
+                var centerCellY = rowPos + cellSize / 2 - dc.getFontHeight(font) / 2;
+
+                dc.drawText(centerCellX, centerCellY,
+                    font, text, Gfx.TEXT_JUSTIFY_CENTER);
             }
         }
 
@@ -128,9 +133,9 @@ class GameView extends Ui.View {
 
         if (grid.isGameOver()) {
             dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-            dc.drawText(width / 2, height / 2,
+            dc.drawText(width / 2, height / 2 - dc.getFontHeight(Gfx.FONT_LARGE),
                 Gfx.FONT_LARGE, "GAME OVER!", Gfx.TEXT_JUSTIFY_CENTER);
-            dc.drawText(width / 2, height / 2 + 20,
+            dc.drawText(width / 2, height / 2,
                 Gfx.FONT_SMALL, "Score: " + Score.getCurrentScore(), Gfx.TEXT_JUSTIFY_CENTER);
         }
     }

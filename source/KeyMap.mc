@@ -24,6 +24,18 @@ function getDirectionKey(key) {
             return DIR_LEFT;
         }
     }
+    // epix
+    if ("epix".equals(device)) {
+        if (key == Ui.KEY_UP) {
+            return DIR_UP;
+        } else if (key == Ui.KEY_DOWN) {
+            return DIR_DOWN;
+        } else if (key == Ui.KEY_ENTER) {
+            return DIR_RIGHT;
+        } else if (key == Ui.KEY_ESC) {
+            return DIR_LEFT;
+        }
+    }
 
     return DIR_UNKNOWN;
 }
