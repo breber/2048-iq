@@ -30,6 +30,21 @@ function getDirectionKey(key) {
             return DIR_UP;
         } else if (key == Ui.KEY_DOWN) {
             return DIR_DOWN;
+        }
+        // Remove these for now, since they don't
+        // have a clear mapping
+        //else if (key == Ui.KEY_ENTER) {
+        //    return DIR_RIGHT;
+        //} else if (key == Ui.KEY_ESC) {
+        //    return DIR_LEFT;
+        //}
+    }
+    // fenix3
+    if ("fenix3".equals(device)) {
+        if (key == Ui.KEY_UP) {
+            return DIR_UP;
+        } else if (key == Ui.KEY_DOWN) {
+            return DIR_DOWN;
         } else if (key == Ui.KEY_ENTER) {
             return DIR_RIGHT;
         } else if (key == Ui.KEY_ESC) {
