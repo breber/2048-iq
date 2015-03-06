@@ -2,6 +2,7 @@ using Grid as Grid;
 using Score as Score;
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
+using Toybox.System as Sys;
 
 var grid = null;
 var screenHeight = 0;
@@ -76,9 +77,17 @@ class GameView extends Ui.View {
         var height = dc.getHeight();
         var width = dc.getWidth();
 
+        // Fenix3 circle handling
+        var device = Ui.loadResource(Rez.Strings.device);
+        if ("fenix3".equals(device)) {
+            height = Math.sqrt(Math.pow(height, 2) / 2);
+            width = height;
+        }
+
         // Draw the tiles
         var cellSize = height / Grid.GRID_SIZE;
-        var centerWidth = TOUCHSCREEN ? (cellSize * (Grid.GRID_SIZE / 2)) : (width / 2);
+        var centerWidth = TOUCHSCREEN ? (cellSize * (Grid.GRID_SIZE / 2)) : (dc.getWidth() / 2);
+        var centerHeight = (dc.getHeight() / 2);
         upDownMinX = (cellSize * Grid.GRID_SIZE);
 
         var tiles = grid.getGrid();
@@ -86,7 +95,7 @@ class GameView extends Ui.View {
             var row = i / Grid.GRID_SIZE;
             var col = i % Grid.GRID_SIZE;
 
-            var rowPos = (row * cellSize);
+            var rowPos = centerHeight - ((2 - row) * cellSize);
             var colPos = centerWidth - ((2 - col) * cellSize);
 
             var bgColor = grid.isGameOver() ? Gfx.COLOR_LT_GRAY : getTileColor(tiles[i]);
@@ -117,13 +126,13 @@ class GameView extends Ui.View {
         // Draw the Grid
         dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_WHITE);
         for (var i = 1; i < Grid.GRID_SIZE; ++i) {
-            var y = i * cellSize;
+            var y = centerHeight - ((2 - i) * cellSize);
             dc.drawLine(centerWidth - (2 * cellSize), y, centerWidth + (2 * cellSize), y);
         }
 
         for (var i = -Grid.GRID_SIZE / 2; i < Grid.GRID_SIZE / 2 + 1; ++i) {
             var x = centerWidth - (i * cellSize);
-            dc.drawLine(x, 0, x, height);
+            dc.drawLine(x, centerHeight - (2 * cellSize), x, centerHeight + (2 * cellSize));
         }
 
         // Draw up/down arrows
