@@ -8,6 +8,15 @@ var grid = null;
 var screenHeight = 0;
 var upDownMinX = 0;
 
+class QuitDelegate extends Ui.ConfirmationDelegate {
+    function onResponse(value) {
+        Sys.println("onResponse: " + value);
+        if (value == 1) {
+            Ui.popView(Ui.SLIDE_IMMEDIATE);
+        }
+    }
+}
+
 class GameDelegate extends Ui.InputDelegate {
     function onTap(evt) {
         if (!handleGameOver() && (grid != null)) {
@@ -28,10 +37,19 @@ class GameDelegate extends Ui.InputDelegate {
     function onKey(evt) {
         if (!handleGameOver() && (grid != null)) {
             var key = evt.getKey();
+
+            if (key == Ui.KEY_MENU) {
+                Ui.pushView(new Ui.Confirmation("Quit?"), new QuitDelegate(), Ui.SLIDE_IMMEDIATE);
+            }
+
             grid.processMove(getDirectionKey(key));
 
             Ui.requestUpdate();
+
+            return true;
         }
+
+        return false;
     }
 
     function onSwipe(evt) {
