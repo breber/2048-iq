@@ -2,7 +2,6 @@ using Grid as Grid;
 using Score as Score;
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
-using Toybox.System as Sys;
 
 var grid = null;
 var screenHeight = 0;
@@ -10,7 +9,6 @@ var upDownMinX = 0;
 
 class QuitDelegate extends Ui.ConfirmationDelegate {
     function onResponse(value) {
-        Sys.println("onResponse: " + value);
         if (value == 1) {
             Ui.popView(Ui.SLIDE_IMMEDIATE);
         }
