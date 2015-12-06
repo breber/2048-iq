@@ -100,6 +100,8 @@ class GameView extends Ui.View {
             width = height;
         }
 
+        // TODO: handle semi-round watch
+
         // Draw the tiles
         var cellSize = height / Grid.GRID_SIZE;
         var centerWidth = TOUCHSCREEN ? (cellSize * (Grid.GRID_SIZE / 2)) : (dc.getWidth() / 2);
