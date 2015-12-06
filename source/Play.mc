@@ -3,6 +3,10 @@ using Toybox.Graphics as Gfx;
 using Score as Score;
 
 class PlayDelegate extends Ui.InputDelegate {
+    function initialize() {
+        InputDelegate.initialize();
+    }
+
     function onTap(evt) {
         pushView();
     }
@@ -19,6 +23,10 @@ class PlayDelegate extends Ui.InputDelegate {
 }
 
 class PlayView extends Ui.View {
+    function initialize() {
+        View.initialize();
+    }
+
     //! Update the view
     function onUpdate(dc) {
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLUE);

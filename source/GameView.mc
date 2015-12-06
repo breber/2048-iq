@@ -8,6 +8,10 @@ var screenHeight = 0;
 var upDownMinX = 0;
 
 class QuitDelegate extends Ui.ConfirmationDelegate {
+    function initialize() {
+        ConfirmationDelegate.initialize();
+    }
+
     function onResponse(value) {
         if (value == 1) {
             Ui.popView(Ui.SLIDE_IMMEDIATE);
@@ -16,6 +20,10 @@ class QuitDelegate extends Ui.ConfirmationDelegate {
 }
 
 class GameDelegate extends Ui.InputDelegate {
+    function initialize() {
+        InputDelegate.initialize();
+    }
+
     function onTap(evt) {
         if (!handleGameOver() && (grid != null)) {
             // Process taps on up/down arrows
@@ -77,6 +85,7 @@ class GameView extends Ui.View {
     hidden var TOUCHSCREEN = "false";
 
     function initialize() {
+        View.initialize();
         TOUCHSCREEN = ("true".equals(Ui.loadResource(Rez.Strings.has_touchscreen)));
     }
 
