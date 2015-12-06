@@ -93,9 +93,9 @@ class GameView extends Ui.View {
         var height = dc.getHeight();
         var width = dc.getWidth();
 
-        // Fenix3 circle handling
-        var device = Ui.loadResource(Rez.Strings.device);
-        if ("fenix3".equals(device)) {
+        // Circle screen handling
+        var isCircle = Ui.loadResource(Rez.Strings.is_circle);
+        if ("true".equals(isCircle)) {
             height = Math.sqrt(Math.pow(height, 2) / 2);
             width = height;
         }

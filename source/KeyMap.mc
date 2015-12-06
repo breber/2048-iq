@@ -37,7 +37,8 @@ function getDirectionKey(key) {
         }
     }
     // fenix3
-    if ("fenix3".equals(device)) {
+    if ("fenix3".equals(device) ||
+        "d2bravo".equals(device)) {
         if (key == Ui.KEY_UP) {
             return DIR_UP;
         } else if (key == Ui.KEY_DOWN) {

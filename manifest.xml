@@ -2,10 +2,11 @@
     <iq:application entry="GameApp" id="3BC0423D5F8246BB8396E714F608232F" launcherIcon="LauncherIcon" name="TwentyFortyEight" type="watch-app">
 
         <iq:products>
-            <iq:product id="vivoactive" partNumber="006-B1907-00"/>
-            <iq:product id="fenix3" partNumber="006-B2050-00"/>
-            <iq:product id="fr920xt" partNumber="006-B1765-00"/>
-            <iq:product id="epix" partNumber="006-B1988-00"/>
+            <iq:product id="vivoactive"/>
+            <iq:product id="fenix3"/>
+            <iq:product id="d2bravo"/>
+            <iq:product id="fr920xt"/>
+            <iq:product id="epix"/>
         </iq:products>
 
         <iq:permissions/>

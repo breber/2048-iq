@@ -3,5 +3,6 @@
     <bitmap id="LauncherIcon" filename="images/launcher_icon.png" />
 	
     <string id="has_touchscreen">false</string>
-    <string id="device"></string>
+    <string id="device">generic</string>
+    <string id="is_circle">false</string>
 </resources>

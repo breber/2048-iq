@@ -1,4 +1,5 @@
 <resources>
     <string id="has_touchscreen">true</string>
     <string id="device">square_watch</string>
+    <string id="is_circle">false</string>
 </resources>
