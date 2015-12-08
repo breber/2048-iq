@@ -6,6 +6,7 @@ using Toybox.Graphics as Gfx;
 var grid = null;
 var screenHeight = 0;
 var upDownMinX = 0;
+var gameQuit = false;
 
 class QuitDelegate extends Ui.ConfirmationDelegate {
     function initialize() {
@@ -13,7 +14,8 @@ class QuitDelegate extends Ui.ConfirmationDelegate {
     }
 
     function onResponse(value) {
-        if (value == 1) {
+        if (value == Ui.CONFIRM_YES) {
+            gameQuit = true;
             Ui.popView(Ui.SLIDE_IMMEDIATE);
         }
     }
@@ -46,11 +48,10 @@ class GameDelegate extends Ui.InputDelegate {
 
             if (key == Ui.KEY_MENU) {
                 Ui.pushView(new Ui.Confirmation("Quit?"), new QuitDelegate(), Ui.SLIDE_IMMEDIATE);
+            } else {
+                grid.processMove(getDirectionKey(key));
+                Ui.requestUpdate();
             }
-
-            grid.processMove(getDirectionKey(key));
-
-            Ui.requestUpdate();
 
             return true;
         }
@@ -87,6 +88,7 @@ class GameView extends Ui.View {
     function initialize() {
         View.initialize();
         TOUCHSCREEN = ("true".equals(Ui.loadResource(Rez.Strings.has_touchscreen)));
+        gameQuit = false;
     }
 
     function onLayout(dc) {
@@ -96,6 +98,10 @@ class GameView extends Ui.View {
 
     //! Update the view
     function onUpdate(dc) {
+        if (gameQuit) {
+            Ui.popView(Ui.SLIDE_IMMEDIATE);
+        }
+
         dc.setColor(Gfx.COLOR_DK_GRAY, Gfx.COLOR_BLACK);
         dc.clear();
 
