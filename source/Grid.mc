@@ -1,18 +1,33 @@
+using Toybox.Application as App;
 using Score as Score;
 
 class Grid {
     static const GRID_SIZE = 4;
 
-    function initialize() {
-        Score.resetCurrentScore();
+    function initialize(restore_game) {
+        if (restore_game) {
+            var app = App.getApp();
+            tiles = app.getProperty("saved_game");
+        } else {
+            Score.resetCurrentScore();
 
-        for (var i = 0; i < tiles.size(); ++i) {
-            tiles[i] = 0;
+            for (var i = 0; i < tiles.size(); ++i) {
+                tiles[i] = 0;
+            }
+
+            // Add the first two tiles
+            addTile();
+            addTile();
         }
+    }
 
-        // Add the first two tiles
-        addTile();
-        addTile();
+    function saveGame() {
+        var app = App.getApp();
+        if (isGameOver()) {
+            app.setProperty("saved_game", null);
+        } else {
+            app.setProperty("saved_game", tiles);
+        }
     }
 
     function getGrid() {

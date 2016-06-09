@@ -15,6 +15,9 @@ class QuitDelegate extends Ui.ConfirmationDelegate {
 
     function onResponse(value) {
         if (value == Ui.CONFIRM_YES) {
+            if (grid != null) {
+                grid.saveGame();
+            }
             gameQuit = true;
             Ui.popView(Ui.SLIDE_IMMEDIATE);
         }
@@ -85,14 +88,14 @@ class GameDelegate extends Ui.InputDelegate {
 class GameView extends Ui.View {
     hidden var TOUCHSCREEN = "false";
 
-    function initialize() {
+    function initialize(restore_game) {
         View.initialize();
         TOUCHSCREEN = ("true".equals(Ui.loadResource(Rez.Strings.has_touchscreen)));
         gameQuit = false;
+        grid = new Grid.Grid(restore_game);
     }
 
     function onLayout(dc) {
-        grid = new Grid.Grid();
         screenHeight = dc.getHeight();
     }
 
@@ -115,10 +118,16 @@ class GameView extends Ui.View {
             width = height;
         }
 
+        // Use min of width/height for determining cell size
+        var minWidthHeight = height;
+        if (width < height) {
+            minWidthHeight = width;
+        }
+
         // TODO: handle semi-round watch
 
         // Draw the tiles
-        var cellSize = height / Grid.GRID_SIZE;
+        var cellSize = minWidthHeight / Grid.GRID_SIZE;
         var centerWidth = TOUCHSCREEN ? (cellSize * (Grid.GRID_SIZE / 2)) : (dc.getWidth() / 2);
         var centerHeight = (dc.getHeight() / 2);
         upDownMinX = (cellSize * Grid.GRID_SIZE);
@@ -175,9 +184,9 @@ class GameView extends Ui.View {
 
         if (grid.isGameOver()) {
             dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-            dc.drawText(width / 2, height / 2 - dc.getFontHeight(Gfx.FONT_LARGE),
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2 - dc.getFontHeight(Gfx.FONT_LARGE),
                 Gfx.FONT_LARGE, "GAME OVER!", Gfx.TEXT_JUSTIFY_CENTER);
-            dc.drawText(width / 2, height / 2,
+            dc.drawText(dc.getWidth() / 2, dc.getHeight() / 2,
                 Gfx.FONT_SMALL, "Score: " + Score.getCurrentScore(), Gfx.TEXT_JUSTIFY_CENTER);
         }
     }

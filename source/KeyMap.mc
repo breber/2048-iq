@@ -13,7 +13,8 @@ function getDirectionKey(key) {
     var device = Ui.loadResource(Rez.Strings.device);
 
     if ("fr920xt".equals(device) ||
-        "epix".equals(device)) {
+        "epix".equals(device) ||
+        "vivoactive_hr".equals(device)) {
         if (key == Ui.KEY_UP) {
             return DIR_UP;
         } else if (key == Ui.KEY_DOWN) {
@@ -27,7 +28,8 @@ function getDirectionKey(key) {
     if ("fenix3".equals(device) ||
         "d2bravo".equals(device) ||
         "fr230".equals(device) ||
-        "fr235".equals(device)) {
+        "fr235".equals(device) ||
+        "fr735xt".equals(device)) {
         if (key == Ui.KEY_UP) {
             return DIR_UP;
         } else if (key == Ui.KEY_DOWN) {

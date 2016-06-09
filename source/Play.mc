@@ -1,6 +1,17 @@
-using Toybox.WatchUi as Ui;
+using Toybox.Application as App;
 using Toybox.Graphics as Gfx;
+using Toybox.WatchUi as Ui;
 using Score as Score;
+
+class RestoreGameDelegate extends Ui.ConfirmationDelegate {
+    function initialize() {
+        ConfirmationDelegate.initialize();
+    }
+
+    function onResponse(value) {
+        Ui.pushView(new GameView(value == Ui.CONFIRM_YES), new GameDelegate(), Ui.SLIDE_IMMEDIATE);
+    }
+}
 
 class PlayDelegate extends Ui.InputDelegate {
     function initialize() {
@@ -18,7 +29,13 @@ class PlayDelegate extends Ui.InputDelegate {
     }
 
     function pushView() {
-        Ui.pushView(new GameView(), new GameDelegate(), Ui.SLIDE_IMMEDIATE);
+        var app = App.getApp();
+        var savedGame = app.getProperty("saved_game");
+        if (savedGame != null) {
+            Ui.pushView(new Ui.Confirmation("Restore Game?"), new RestoreGameDelegate(), Ui.SLIDE_IMMEDIATE);
+        } else {
+            Ui.pushView(new GameView(false), new GameDelegate(), Ui.SLIDE_IMMEDIATE);
+        }
     }
 }
 
