@@ -86,11 +86,11 @@ class GameDelegate extends Ui.InputDelegate {
 }
 
 class GameView extends Ui.View {
-    hidden var TOUCHSCREEN = "false";
+    hidden var NEEDS_UP_DOWN_ARROWS = "false";
 
     function initialize(restore_game) {
         View.initialize();
-        TOUCHSCREEN = ("true".equals(Ui.loadResource(Rez.Strings.has_touchscreen)));
+        NEEDS_UP_DOWN_ARROWS = ("true".equals(Ui.loadResource(Rez.Strings.needs_up_down_arrows)));
         gameQuit = false;
         grid = new Grid.Grid(restore_game);
     }
@@ -128,7 +128,7 @@ class GameView extends Ui.View {
 
         // Draw the tiles
         var cellSize = minWidthHeight / Grid.GRID_SIZE;
-        var centerWidth = TOUCHSCREEN ? (cellSize * (Grid.GRID_SIZE / 2)) : (dc.getWidth() / 2);
+        var centerWidth = NEEDS_UP_DOWN_ARROWS ? (cellSize * (Grid.GRID_SIZE / 2)) : (dc.getWidth() / 2);
         var centerHeight = (dc.getHeight() / 2);
         upDownMinX = (cellSize * Grid.GRID_SIZE);
 
@@ -178,7 +178,7 @@ class GameView extends Ui.View {
         }
 
         // Draw up/down arrows
-        if (TOUCHSCREEN) {
+        if (NEEDS_UP_DOWN_ARROWS) {
             drawUpDownArrows(dc);
         }
 

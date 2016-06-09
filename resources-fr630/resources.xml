@@ -1,7 +1,4 @@
 <resources>
-	<!-- TODO: has_touchscreen is used to draw the arrows on the screen
-	           if the 630 supports swiping in all directions, we don't need this enabled -->
-    <string id="has_touchscreen">false</string>
     <string id="device">fr630</string>
     <string id="is_circle">true</string>
 </resources>

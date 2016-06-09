@@ -1,5 +1,5 @@
 <resources>
-    <string id="has_touchscreen">true</string>
+    <string id="needs_up_down_arrows">true</string>
     <string id="device">epix</string>
     <string id="is_circle">false</string>
 </resources>

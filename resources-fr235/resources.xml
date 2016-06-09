@@ -1,5 +1,4 @@
 <resources>
-    <string id="has_touchscreen">false</string>
     <string id="device">fr235</string>
     <string id="is_circle">true</string>
 </resources>
