@@ -3,6 +3,4 @@
     <bitmap id="LauncherIcon" filename="images/launcher_icon.png" />
 	
     <string id="needs_up_down_arrows">false</string>
-    <string id="device">generic</string>
-    <string id="is_circle">false</string>
 </resources>

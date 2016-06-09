@@ -1,5 +1,3 @@
 <resources>
 	<bitmap id="LauncherIcon" filename="images/launcher_icon.png" />
-    <string id="device">vivoactive_hr</string>
-    <string id="is_circle">false</string>
 </resources>

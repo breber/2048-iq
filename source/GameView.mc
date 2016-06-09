@@ -2,6 +2,7 @@ using Grid as Grid;
 using Score as Score;
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
+using Toybox.System as Sys;
 
 var grid = null;
 var screenHeight = 0;
@@ -86,11 +87,18 @@ class GameDelegate extends Ui.InputDelegate {
 }
 
 class GameView extends Ui.View {
-    hidden var NEEDS_UP_DOWN_ARROWS = "false";
+    hidden var NEEDS_UP_DOWN_ARROWS = false;
+    hidden var IS_CIRCULAR_SCREEN = false;
 
     function initialize(restore_game) {
         View.initialize();
         NEEDS_UP_DOWN_ARROWS = ("true".equals(Ui.loadResource(Rez.Strings.needs_up_down_arrows)));
+
+        var deviceSettings = Sys.getDeviceSettings();
+        if (deviceSettings) {
+            var shape = deviceSettings.screenShape;
+            IS_CIRCULAR_SCREEN = (shape == Sys.SCREEN_SHAPE_ROUND) || (shape == Sys.SCREEN_SHAPE_SEMI_ROUND);
+        }
         gameQuit = false;
         grid = new Grid.Grid(restore_game);
     }
@@ -112,8 +120,7 @@ class GameView extends Ui.View {
         var width = dc.getWidth();
 
         // Circle screen handling
-        var isCircle = Ui.loadResource(Rez.Strings.is_circle);
-        if ("true".equals(isCircle)) {
+        if (IS_CIRCULAR_SCREEN) {
             height = Math.sqrt(Math.pow(height, 2) / 2);
             width = height;
         }
@@ -123,8 +130,6 @@ class GameView extends Ui.View {
         if (width < height) {
             minWidthHeight = width;
         }
-
-        // TODO: handle semi-round watch
 
         // Draw the tiles
         var cellSize = minWidthHeight / Grid.GRID_SIZE;
