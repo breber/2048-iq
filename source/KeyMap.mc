@@ -10,8 +10,6 @@ enum
 }
 
 function getDirectionKey(key) {
-    var device = Ui.loadResource(Rez.Strings.device);
-
     if (key == Ui.KEY_UP) {
         return DIR_UP;
     } else if (key == Ui.KEY_DOWN) {
