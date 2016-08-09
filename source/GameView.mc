@@ -47,15 +47,12 @@ class GameDelegate extends Ui.InputDelegate {
     }
 
     function onKey(evt) {
-        if (!handleGameOver() && (grid != null)) {
-            var key = evt.getKey();
-
-            if (key == Ui.KEY_MENU) {
-                Ui.pushView(new Ui.Confirmation("Quit?"), new QuitDelegate(), Ui.SLIDE_IMMEDIATE);
-            } else {
-                grid.processMove(getDirectionKey(key));
-                Ui.requestUpdate();
-            }
+        if (evt.getKey() == Ui.KEY_MENU) {
+            Ui.pushView(new Ui.Confirmation("Quit?"), new QuitDelegate(), Ui.SLIDE_IMMEDIATE);
+            return true;
+        } else if (!handleGameOver() && (grid != null)) {
+            grid.processMove(getDirectionKey(evt.getKey()));
+            Ui.requestUpdate();
 
             return true;
         }
