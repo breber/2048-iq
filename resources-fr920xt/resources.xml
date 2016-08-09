@@ -1,4 +1,3 @@
 <resources>
 	<bitmap id="LauncherIcon" filename="images/launcher_icon.png" />
-    <string id="needs_up_down_arrows">true</string>
 </resources>
